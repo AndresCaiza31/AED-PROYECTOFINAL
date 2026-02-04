@@ -22,7 +22,43 @@ def agregar_jerarquia(raiz, region, subregion, centro):
     if centro not in nodo_sub.centros:
         nodo_sub.centros.append(centro)
 
+def cargar_centros(ruta_archivo, grafo, raiz):
+    if os.path.exists(ruta_archivo):
+        try:
+            archivo = open(ruta_archivo, "r", encoding="utf-8")
+            for linea in archivo:
+                datos = linea.strip().split(",")
+                if len(datos) >= 6:
+                    u1 = datos[0]
+                    u2 = datos[1]
+                    dist = float(datos[2])
+                    costo = float(datos[3])
+                    reg = datos[4]
+                    subreg = datos[5]
+                    
+                    agregar_conexion(grafo, u1, u2, dist, costo)
+                    agregar_jerarquia(raiz, reg, subreg, u1)
+                    agregar_jerarquia(raiz, reg, subreg, u2)
+            archivo.close()
+        except Exception as e:
+            print(f"Error al cargar centros: {e}")
 
+def guardar_centros(ruta_archivo, grafo):
+    try:
+        archivo = open(ruta_archivo, "w", encoding="utf-8")
+        visitados = set()
+        for u in grafo:
+            for v in grafo[u]:
+                if (v, u) not in visitados:
+                    distancia = grafo[u][v]['dist']
+                    costo = grafo[u][v]['costo']
+                    linea = f"{u},{v},{distancia},{costo},Sierra,Quito\n"
+                    archivo.write(linea)
+                    visitados.add((u, v))
+        archivo.close()
+        print("Cambios guardados exitosamente en el archivo.")
+    except Exception as e:
+        print(f"Error al intentar guardar los datos: {e}")
 
 def validar_password(password):
     if len(password) < 6:
