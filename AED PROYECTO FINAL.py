@@ -24,36 +24,26 @@ def agregar_jerarquia(raiz, region, subregion, centro):
     if centro not in nodo_sub.centros:
         nodo_sub.centros.append(centro)
 
-def agregar_conexion(grafo, u, v, dist, costo):
-    if u not in grafo:
-        grafo[u] = {}
-    if v not in grafo:
-        grafo[v] = {}
-        
-    grafo[u][v] = {'dist': dist, 'costo': costo}
-    grafo[v][u] = {'dist': dist, 'costo': costo}
-
 def cargar_centros(ruta_archivo, grafo, raiz):
     if os.path.exists(ruta_archivo):
         try:
-            archivo = open(ruta_archivo, "r", encoding="utf-8")
-            for linea in archivo:
-                datos = linea.strip().split(",")
-                if len(datos) >= 6:
-                    u1 = datos[0]
-                    u2 = datos[1]
-                    dist = float(datos[2])
-                    costo = float(datos[3])
-                    reg = datos[4]
-                    subreg = datos[5]
-                    
-                    agregar_conexion(grafo, u1, u2, dist, costo)
-                    agregar_jerarquia(raiz, reg, subreg, u1)
-                    agregar_jerarquia(raiz, reg, subreg, u2)
-            archivo.close()
+            with open(ruta_archivo, "r", encoding="utf-8") as archivo:
+                for linea in archivo:
+                    datos = linea.strip().split(",")
+                    if len(datos) >= 6:
+                        u1, u2 = datos[0], datos[1]
+                        dist, costo = float(datos[2]), float(datos[3])
+                        reg, subreg = datos[4], datos[5]
+                        
+                        if u1 not in grafo: grafo[u1] = {}
+                        if u2 not in grafo: grafo[u2] = {}
+                        grafo[u1][u2] = {'dist': dist, 'costo': costo, 'reg': reg, 'subreg': subreg}
+                        grafo[u2][u1] = {'dist': dist, 'costo': costo, 'reg': reg, 'subreg': subreg}
+                        
+                        agregar_jerarquia(raiz, reg, subreg, u1)
+                        agregar_jerarquia(raiz, reg, subreg, u2)
         except Exception as e:
             print(f"Error al cargar centros: {e}")
-
 
 def guardar_centros(ruta_archivo, grafo):
     try:
@@ -64,11 +54,13 @@ def guardar_centros(ruta_archivo, grafo):
                 if (v, u) not in visitados:
                     distancia = grafo[u][v]['dist']
                     costo = grafo[u][v]['costo']
-                    linea = f"{u},{v},{distancia},{costo},Sierra,Quito\n"
+                    region = grafo[u][v]['reg']
+                    subregion = grafo[u][v]['subreg']
+                    linea = f"{u},{v},{distancia},{costo},{region},{subregion}\n"
                     archivo.write(linea)
                     visitados.add((u, v))
         archivo.close()
-        print("Cambios guardados exitosamente en el archivo.")
+        print("Cambios guardados exitosamente.")
     except Exception as e:
         print(f"Error al intentar guardar los datos: {e}")
 
@@ -111,24 +103,103 @@ def validar_password(password):
         return False
     return True
 
+def validar_correo(email):
+    patron = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    if re.match(patron, email):
+        return True
+    return False
+
 # --- FUNCIONES DE LÓGICA DE ACCIÓN ---
 
-def accion_registrar_ruta(grafo):
-    try:
-        centro_a = input("Ingrese el Centro Origen: ")
-        centro_b = input("Ingrese el Centro Destino: ")
-        dist_input = input("Ingrese la distancia en KM: ")
-        distancia = float(dist_input)
-        costo_input = input("Ingrese el costo de envío $: ")
-        costo = float(costo_input)
+def accion_registrar_ruta(grafo, arbol_regiones):
+    print("\n--- REGISTRO DE NUEVA RUTA ---")    
+    while True:
+        centro_a = input("Ingrese el Centro Origen: ").strip().lower().title()
+        centro_b = input("Ingrese el Centro Destino: ").strip().lower().title()
+
+        if not (centro_a and all(x.isalpha() or x.isspace() for x in centro_a)):
+            print("Error: El origen no es válido.")
+            continue
+
+        if not (centro_b and all(x.isalpha() or x.isspace() for x in centro_b)):
+            print("Error: El destino no es válido.")
+            continue
+
+        if centro_a == centro_b:
+            print("Error: El origen y el destino no pueden ser el mismo.")
+            continue
         
-        agregar_conexion(grafo, centro_a, centro_b, distancia, costo)
-        print("La ruta ha sido registrada en el sistema temporal.")
-    except ValueError:
-        print("Error: Se requieren valores numéricos para distancia y costo.")
+        break
+
+    while True:
+        try:
+            distancia = float(input("Ingrese la distancia en KM: "))
+            if distancia > 0:
+                break
+            else:
+                print("Error: La distancia debe ser un número positivo mayor a cero.")
+                continue
+
+        except ValueError:
+            print("Error: Ingrese un valor numérico válido para la distancia.")
+
+    while True:
+        try:
+            costo = float(input("Ingrese el costo de envío $: "))
+            if costo >= 0:
+                break
+            else:
+                print("Error: El costo no puede ser negativo.")
+                continue
+
+        except ValueError:
+            print("Error: Ingrese un valor numérico válido para el costo.")
+
+    while True:
+        region = input("Ingrese la Región (Ej: Costa, Sierra, Amazonía): ").strip().lower().title()
+        if region and all(x.isalpha() or x.isspace() for x in region):
+            break
+        else:
+            print("Error: Ingrese una región válida.")
+            continue
+
+    while True:
+        subregion = input("Ingrese la Subregión/Provincia (Ej: Guayas, Pichincha): ").strip().lower().title()
+        if subregion and all(x.isalpha() or x.isspace() for x in subregion):
+            break
+        else:
+            print("Error: Ingrese una subregión válida.")
+            continue
+
+    if centro_a not in grafo: grafo[centro_a] = {}
+    if centro_b not in grafo: grafo[centro_b] = {}
+    
+    grafo[centro_a][centro_b] = {
+        'dist': distancia, 
+        'costo': costo, 
+        'reg': region, 
+        'subreg': subregion
+    }
+    grafo[centro_b][centro_a] = {
+        'dist': distancia, 
+        'costo': costo, 
+        'reg': region, 
+        'subreg': subregion
+    }
+
+    agregar_jerarquia(arbol_regiones, region, subregion, centro_a)
+    agregar_jerarquia(arbol_regiones, region, subregion, centro_b)
+
+    print(f"\nRuta registrada: {centro_a} <-> {centro_b} ({distancia} KM, ${costo})")
+
 
 def accion_eliminar_centro(grafo):
-    centro = input("Ingrese el nombre del centro a eliminar: ")
+    print("\n--- Eliminar Centro ---")
+    if not grafo:
+        print("No existen registros.")
+        return
+
+    centro = input("Ingrese el nombre del centro a eliminar: ").strip().lower().title()
     if centro in grafo:
         grafo.pop(centro)
         for nodo in grafo:
@@ -140,15 +211,23 @@ def accion_eliminar_centro(grafo):
 
 def accion_listar_centros(grafo):
     print("\n--- LISTADO DE CENTROS LOGÍSTICOS ---")
+    if not grafo:
+        print("Error. No se tienen centros registrados.")
+        return
+
     centros_ordenados = sorted(grafo.keys())
     for centro in centros_ordenados:
         print(f"• {centro}")
 
 def accion_calcular_ruta(grafo):
-    origen = input("Punto de partida: ")
-    destino = input("Punto de llegada: ")
+    origen = input("Punto de partida: ").strip().lower().title()
+    destino = input("Punto de llegada: ").strip().lower().title()
     costo, camino = algoritmo_dijkstra(grafo, origen, destino)
     
+    if origen not in grafo or destino not in grafo:
+        print("Error: Uno de los centros (o ambos) no existen en el sistema.")
+        return
+
     if camino:
         camino_formateado = " -> ".join(camino)
         print(f"Ruta más económica encontrada: {camino_formateado}")
@@ -167,23 +246,59 @@ def accion_ver_regiones(raiz):
 # ------------------ USUARIOS ------------------
 def registrar_usuario(ruta_usuarios):
     print("\n--- REGISTRO DE NUEVA CUENTA ---")
-    nombre = input("Nombre completo: ")
-    email = input("Correo electrónico: ")
-    password = input("Contraseña: ")
+    while True:
+        nombre = input("Ingrese su nombre: ").strip().lower().title()
+        
+        if not nombre:
+            print("El campo no puede estar vacío.")
+            continue
+            
+        es_valido = True
+        for caracter in nombre:
+            if not (caracter.isalpha() or caracter.isspace()):
+                es_valido = False
+                break
+                
+        if es_valido:
+            break
+        else:
+            print("Error: El nombre solo debe contener letras y espacios.")
+
+    while True:
+        correo = input("Ingrese su correo: ").strip().lower()
+        if validar_correo(correo):
+            break
+        else:
+            print("Error: Ingrese un formato de correo válido (ej: usuario@epn.edu.ec).")
     
-    print("Seleccione el tipo de cuenta:")
-    print("1. Cliente")
-    print("2. Administrador")
-    op_rol = input("Opción: ")
+    while True:
+        password = input("Contraseña: ").strip()
+        if not password:
+            print("La contraseña no puede estar vacía")
+            continue
+        else:
+            break
     
-    rol = "Cliente"
-    if op_rol == "2":
-        rol = "Admin"
+    while True:
+        print("Seleccione el tipo de cuenta:")
+        print("1. Cliente")
+        print("2. Administrador")
+        
+        tipo_cuenta = input("Seleccione una opción (1-2): ").strip()
+        
+        if tipo_cuenta == "1":
+            rol = "Cliente"
+            break
+        elif tipo_cuenta == "2":
+            rol = "Admin"
+            break
+        else:
+            print("Error: Selección no válida. Por favor, ingrese 1 o 2.")
     
     if validar_password(password):
         try:
             archivo = open(ruta_usuarios, "a", encoding="utf-8")
-            linea = f"{email},{password},{nombre},{rol}\n"
+            linea = f"{correo},{password},{nombre},{rol}\n"
             archivo.write(linea)
             archivo.close()
             print(f"Cuenta de {rol} creada exitosamente para {nombre}.")
@@ -194,8 +309,8 @@ def registrar_usuario(ruta_usuarios):
 
 def login(ruta_usuarios):
     print("\n--- INICIO DE SESIÓN ---")
-    email = input("Email: ")
-    password = input("Password: ")
+    email = input("Email: ").strip().lower()
+    password = input("Password: ").strip()
     
     if os.path.exists(ruta_usuarios):
         try:
@@ -219,7 +334,7 @@ def login(ruta_usuarios):
 
 # --- MENÚS (ESTRUCTURA DE FLUJO) ---
 
-def menu_admin(grafo, ruta_archivo):
+def menu_admin(grafo, ruta_archivo, arbol_regiones):
     while True:
         print("\n--- PANEL DE CONTROL: ADMINISTRADOR ---")
         print("1. Registrar nueva ruta")
@@ -230,7 +345,7 @@ def menu_admin(grafo, ruta_archivo):
         opcion = input("Seleccione una opción: ")
         
         if opcion == "1":
-            accion_registrar_ruta(grafo)
+            accion_registrar_ruta(grafo, arbol_regiones)
         elif opcion == "2":
             accion_listar_centros(grafo)
         elif opcion == "3":
@@ -238,6 +353,8 @@ def menu_admin(grafo, ruta_archivo):
         elif opcion == "4":
             guardar_centros(ruta_archivo, grafo)
             break
+        else:
+            print("Error. Debe ingresar un número entero del 1 al 4")
 
 def menu_cliente(grafo, raiz, usuario):
     while True:
@@ -255,6 +372,8 @@ def menu_cliente(grafo, raiz, usuario):
             accion_ver_regiones(raiz)
         elif opcion == "3":
             break
+        else:
+            print("Error. Ingrese un número entero del 1 al 3")
 
 def main():
     ruta_script = os.path.abspath(__file__)
@@ -280,8 +399,10 @@ def main():
             usuario = login(f_usuarios)
             if usuario:
                 if usuario["rol"] == "Admin":
-                    menu_admin(red_logistica, f_centros)
+                    print("¡Credenciales correctas! Bienvenido al Sistema - ADMIN ")
+                    menu_admin(red_logistica, f_centros, arbol_regiones)
                 else:
+                    print("¡Credenciales correctas! Bienvenido al Sistema - CLIENTE ")
                     menu_cliente(red_logistica, arbol_regiones, usuario)
             else:
                 print("Acceso denegado: Credenciales no válidas.")
@@ -290,5 +411,7 @@ def main():
         elif seleccion == "3":
             print("Saliendo de PoliDelivery. ¡Hasta pronto!")
             break
+        else:
+            print("Error. Ingrese un número entero del 1 al 3")
 
 main()
