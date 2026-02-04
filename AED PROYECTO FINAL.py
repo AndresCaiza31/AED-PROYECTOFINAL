@@ -111,6 +111,35 @@ def validar_password(password):
         return False
     return True
 
+# --- FUNCIONES DE LÓGICA DE ACCIÓN ---
+
+def accion_registrar_ruta(grafo):
+    try:
+        centro_a = input("Ingrese el Centro Origen: ")
+        centro_b = input("Ingrese el Centro Destino: ")
+        dist_input = input("Ingrese la distancia en KM: ")
+        distancia = float(dist_input)
+        costo_input = input("Ingrese el costo de envío $: ")
+        costo = float(costo_input)
+        
+        agregar_conexion(grafo, centro_a, centro_b, distancia, costo)
+        print("La ruta ha sido registrada en el sistema temporal.")
+    except ValueError:
+        print("Error: Se requieren valores numéricos para distancia y costo.")
+
+def accion_eliminar_centro(grafo):
+    centro = input("Ingrese el nombre del centro a eliminar: ")
+    if centro in grafo:
+        grafo.pop(centro)
+        for nodo in grafo:
+            if centro in grafo[nodo]:
+                grafo[nodo].pop(centro)
+        print(f"El centro '{centro}' y sus rutas han sido eliminados.")
+    else:
+        print("El centro ingresado no existe.")
+
+
+
 # ------------------ USUARIOS ------------------
 def registrar_usuario(ruta_usuarios):
     print("\n--- REGISTRO DE NUEVA CUENTA ---")
