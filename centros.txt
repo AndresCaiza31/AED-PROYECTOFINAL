@@ -1,1 +1,25 @@
-Centro Histórico,Escuela Politénica Nacional,5.5,2.5,Sierra,Quito
+Quito,Centro Histórico,3.5,0.75,Sierra,Pichincha
+Quito,Escuela Politécnica Nacional,2.0,0.50,Sierra,Pichincha
+Quito,Latacunga,105.0,6.50,Sierra,Pichincha
+Quito,Ibarra,115.0,8.50,Sierra,Pichincha
+Quito,Santo Domingo,150.0,12.00,Sierra,Pichincha
+Guayaquil,Quevedo,175.0,11.50,Costa,Guayas
+Guayaquil,Manta,190.0,14.00,Costa,Guayas
+Guayaquil,Machala,185.0,13.50,Costa,Guayas
+Guayaquil,Santa Elena,120.0,8.00,Costa,Guayas
+Cuenca,Azogues,30.0,2.50,Sierra,Azuay
+Cuenca,Loja,210.0,15.00,Sierra,Azuay
+Ambato,Latacunga,40.0,3.50,Sierra,Tungurahua
+Ambato,Riobamba,55.0,4.25,Sierra,Tungurahua
+Riobamba,Puyo,130.0,10.00,Sierra,Chimborazo
+Ibarra,Tulcan,125.0,9.00,Sierra,Imbabura
+Manta,Portoviejo,35.0,2.50,Costa,Manabi
+Machala,Huaquillas,75.0,5.00,Costa,El Oro
+Tena,Baeza,75.0,8.50,Amazonia,Napo
+Tena,Puyo,80.0,9.00,Amazonia,Napo
+Puyo,Macas,130.0,12.50,Amazonia,Pastaza
+Esmeraldas,Santo Domingo,175.0,14.50,Costa,Esmeraldas
+Loja,Zamora,65.0,7.00,Sierra,Loja
+Quito,Santo Domingo,150.0,12.00,Sierra,Pichincha
+Santo Domingo,Quevedo,105.0,8.00,Costa,Santo Domingo
+Quevedo,Guayaquil,175.0,11.50,Costa,Los Rios
