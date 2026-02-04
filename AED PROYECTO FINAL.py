@@ -167,3 +167,28 @@ def registrar_usuario(ruta_usuarios):
             print(f"Error técnico al escribir el archivo: {e}")
     else:
         print("Error: La contraseña no cumple con los requisitos mínimos.")
+
+def login(ruta_usuarios):
+    print("\n--- INICIO DE SESIÓN ---")
+    email = input("Email: ")
+    password = input("Password: ")
+    
+    if os.path.exists(ruta_usuarios):
+        try:
+            archivo = open(ruta_usuarios, "r", encoding="utf-8")
+            for linea in archivo:
+                partes = linea.strip().split(",")
+                if len(partes) >= 4:
+                    if partes[0] == email and partes[1] == password:
+                        archivo.close()
+                        datos = {
+                            "email": partes[0],
+                            "nombre": partes[2],
+                            "rol": partes[3]
+                        }
+                        return datos
+            archivo.close()
+        except Exception as e:
+            print(f"Error al leer la base de datos de usuarios: {e}")
+            
+    return None
