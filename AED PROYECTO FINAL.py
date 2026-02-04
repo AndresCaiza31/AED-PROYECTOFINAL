@@ -238,3 +238,57 @@ def menu_admin(grafo, ruta_archivo):
         elif opcion == "4":
             guardar_centros(ruta_archivo, grafo)
             break
+
+def menu_cliente(grafo, raiz, usuario):
+    while True:
+        nombre = usuario['nombre']
+        print(f"\n--- SERVICIOS PARA: {nombre} ---")
+        print("1. Calcular ruta de envío económica")
+        print("2. Consultar mapa de regiones")
+        print("3. Finalizar sesión")
+        
+        opcion = input("Seleccione una opción: ")
+        
+        if opcion == "1":
+            accion_calcular_ruta(grafo)
+        elif opcion == "2":
+            accion_ver_regiones(raiz)
+        elif opcion == "3":
+            break
+
+def main():
+    ruta_script = os.path.abspath(__file__)
+    directorio = os.path.dirname(ruta_script)
+    
+    f_centros = os.path.join(directorio, "centros.txt")
+    f_usuarios = os.path.join(directorio, "usuarios.txt")
+    
+    red_logistica = {}
+    arbol_regiones = NodoRegion("Ecuador")
+    
+    cargar_centros(f_centros, red_logistica, arbol_regiones)
+    
+    while True:
+        print("\n--- BIENVENIDO A POLIDELIVERY ---")
+        print("1. Iniciar Sesión")
+        print("2. Registrar Usuario")
+        print("3. Salir del Programa")
+        
+        seleccion = input("Seleccione: ")
+        
+        if seleccion == "1":
+            usuario = login(f_usuarios)
+            if usuario:
+                if usuario["rol"] == "Admin":
+                    menu_admin(red_logistica, f_centros)
+                else:
+                    menu_cliente(red_logistica, arbol_regiones, usuario)
+            else:
+                print("Acceso denegado: Credenciales no válidas.")
+        elif seleccion == "2":
+            registrar_usuario(f_usuarios)
+        elif seleccion == "3":
+            print("Saliendo de PoliDelivery. ¡Hasta pronto!")
+            break
+
+main()
