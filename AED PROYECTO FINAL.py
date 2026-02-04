@@ -156,6 +156,14 @@ def accion_calcular_ruta(grafo):
     else:
         print("No se encontró ninguna ruta disponible entre los puntos.")
 
+def accion_ver_regiones(raiz):
+    print("\n--- ORGANIZACIÓN TERRITORIAL ---")
+    for nombre_reg, nodo_reg in raiz.subregiones.items():
+        print(f"Región: {nombre_reg}")
+        for nombre_sub, nodo_sub in nodo_reg.subregiones.items():
+            centros_texto = ", ".join(nodo_sub.centros)
+            print(f"   Subregión {nombre_sub}: [{centros_texto}]")
+
 # ------------------ USUARIOS ------------------
 def registrar_usuario(ruta_usuarios):
     print("\n--- REGISTRO DE NUEVA CUENTA ---")
@@ -209,10 +217,24 @@ def login(ruta_usuarios):
             
     return None
 
-def accion_ver_regiones(raiz):
-    print("\n--- ORGANIZACIÓN TERRITORIAL ---")
-    for nombre_reg, nodo_reg in raiz.subregiones.items():
-        print(f"Región: {nombre_reg}")
-        for nombre_sub, nodo_sub in nodo_reg.subregiones.items():
-            centros_texto = ", ".join(nodo_sub.centros)
-            print(f"   Subregión {nombre_sub}: [{centros_texto}]")
+# --- MENÚS (ESTRUCTURA DE FLUJO) ---
+
+def menu_admin(grafo, ruta_archivo):
+    while True:
+        print("\n--- PANEL DE CONTROL: ADMINISTRADOR ---")
+        print("1. Registrar nueva ruta")
+        print("2. Listar centros registrados")
+        print("3. Eliminar centro logístico")
+        print("4. Guardar cambios y cerrar sesión")
+        
+        opcion = input("Seleccione una opción: ")
+        
+        if opcion == "1":
+            accion_registrar_ruta(grafo)
+        elif opcion == "2":
+            accion_listar_centros(grafo)
+        elif opcion == "3":
+            accion_eliminar_centro(grafo)
+        elif opcion == "4":
+            guardar_centros(ruta_archivo, grafo)
+            break
