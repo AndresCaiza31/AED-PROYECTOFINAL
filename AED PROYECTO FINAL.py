@@ -188,7 +188,6 @@ def accion_registrar_ruta(grafo, arbol_regiones):
     }
 
     agregar_jerarquia(arbol_regiones, region, subregion, centro_a)
-    agregar_jerarquia(arbol_regiones, region, subregion, centro_b)
 
     print(f"\nRuta registrada: {centro_a} <-> {centro_b} ({distancia} KM, ${costo})")
 
