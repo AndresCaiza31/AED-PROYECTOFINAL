@@ -208,3 +208,11 @@ def login(ruta_usuarios):
             print(f"Error al leer la base de datos de usuarios: {e}")
             
     return None
+
+def accion_ver_regiones(raiz):
+    print("\n--- ORGANIZACIÓN TERRITORIAL ---")
+    for nombre_reg, nodo_reg in raiz.subregiones.items():
+        print(f"Región: {nombre_reg}")
+        for nombre_sub, nodo_sub in nodo_reg.subregiones.items():
+            centros_texto = ", ".join(nodo_sub.centros)
+            print(f"   Subregión {nombre_sub}: [{centros_texto}]")
