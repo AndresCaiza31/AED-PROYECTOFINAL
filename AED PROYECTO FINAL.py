@@ -138,7 +138,23 @@ def accion_eliminar_centro(grafo):
     else:
         print("El centro ingresado no existe.")
 
+def accion_listar_centros(grafo):
+    print("\n--- LISTADO DE CENTROS LOGÍSTICOS ---")
+    centros_ordenados = sorted(grafo.keys())
+    for centro in centros_ordenados:
+        print(f"• {centro}")
 
+def accion_calcular_ruta(grafo):
+    origen = input("Punto de partida: ")
+    destino = input("Punto de llegada: ")
+    costo, camino = algoritmo_dijkstra(grafo, origen, destino)
+    
+    if camino:
+        camino_formateado = " -> ".join(camino)
+        print(f"Ruta más económica encontrada: {camino_formateado}")
+        print(f"Inversión total requerida: ${costo}")
+    else:
+        print("No se encontró ninguna ruta disponible entre los puntos.")
 
 # ------------------ USUARIOS ------------------
 def registrar_usuario(ruta_usuarios):
