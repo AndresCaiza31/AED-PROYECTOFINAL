@@ -1,5 +1,6 @@
 import re
-
+import os
+import heapq
 class NodoRegion:
     def __init__(self, nombre):
         self.nombre = nombre
@@ -43,6 +44,37 @@ def cargar_centros(ruta_archivo, grafo, raiz):
         except Exception as e:
             print(f"Error al cargar centros: {e}")
 
+def agregar_conexion(grafo, u, v, dist, costo):
+    if u not in grafo:
+        grafo[u] = {}
+    if v not in grafo:
+        grafo[v] = {}
+        
+    grafo[u][v] = {'dist': dist, 'costo': costo}
+    grafo[v][u] = {'dist': dist, 'costo': costo}
+
+def cargar_centros(ruta_archivo, grafo, raiz):
+    if os.path.exists(ruta_archivo):
+        try:
+            archivo = open(ruta_archivo, "r", encoding="utf-8")
+            for linea in archivo:
+                datos = linea.strip().split(",")
+                if len(datos) >= 6:
+                    u1 = datos[0]
+                    u2 = datos[1]
+                    dist = float(datos[2])
+                    costo = float(datos[3])
+                    reg = datos[4]
+                    subreg = datos[5]
+                    
+                    agregar_conexion(grafo, u1, u2, dist, costo)
+                    agregar_jerarquia(raiz, reg, subreg, u1)
+                    agregar_jerarquia(raiz, reg, subreg, u2)
+            archivo.close()
+        except Exception as e:
+            print(f"Error al cargar centros: {e}")
+
+
 def guardar_centros(ruta_archivo, grafo):
     try:
         archivo = open(ruta_archivo, "w", encoding="utf-8")
@@ -59,6 +91,36 @@ def guardar_centros(ruta_archivo, grafo):
         print("Cambios guardados exitosamente en el archivo.")
     except Exception as e:
         print(f"Error al intentar guardar los datos: {e}")
+
+
+
+def algoritmo_dijkstra(grafo, inicio, fin):
+    cola_prioridad = []
+    tupla_inicial = (0, inicio, [])
+    heapq.heappush(cola_prioridad, tupla_inicial)
+    visitados = set()
+    
+    while cola_prioridad:
+        costo_acumulado, nodo_actual, camino = heapq.heappop(cola_prioridad)
+        
+        if nodo_actual in visitados:
+            continue
+            
+        nuevo_camino = camino + [nodo_actual]
+        
+        if nodo_actual == fin:
+            return costo_acumulado, nuevo_camino
+            
+        visitados.add(nodo_actual)
+        
+        if nodo_actual in grafo:
+            for vecino in grafo[nodo_actual]:
+                if vecino not in visitados:
+                    costo_tramo = grafo[nodo_actual][vecino]['costo']
+                    nuevo_costo = costo_acumulado + costo_tramo
+                    heapq.heappush(cola_prioridad, (nuevo_costo, vecino, nuevo_camino))
+                    
+    return float("inf"), []
 
 def validar_password(password):
     if len(password) < 6:
