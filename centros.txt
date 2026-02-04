@@ -1,25 +1,26 @@
 Quito,Centro Histórico,3.5,0.75,Sierra,Pichincha
-Quito,Escuela Politécnica Nacional,2.0,0.50,Sierra,Pichincha
-Quito,Latacunga,105.0,6.50,Sierra,Pichincha
-Quito,Ibarra,115.0,8.50,Sierra,Pichincha
-Quito,Santo Domingo,150.0,12.00,Sierra,Pichincha
-Guayaquil,Quevedo,175.0,11.50,Costa,Guayas
-Guayaquil,Manta,190.0,14.00,Costa,Guayas
-Guayaquil,Machala,185.0,13.50,Costa,Guayas
-Guayaquil,Santa Elena,120.0,8.00,Costa,Guayas
-Cuenca,Azogues,30.0,2.50,Sierra,Azuay
-Cuenca,Loja,210.0,15.00,Sierra,Azuay
-Ambato,Latacunga,40.0,3.50,Sierra,Tungurahua
+Quito,Escuela Politécnica Nacional,2.0,0.5,Sierra,Pichincha
+Quito,La Floresta,1.5,0.4,Sierra,Pichincha
+Quito,Ibarra,115.0,8.5,Sierra,Pichincha
+Quito,Latacunga,105.0,6.5,Sierra,Pichincha
+Quito,Santo Domingo,150.0,12.0,Sierra,Pichincha
+Quito,Baeza,105.0,9.5,Amazonia,Napo
+Quito,El Condado,3.0,2.0,Sierra,Pichincha
+Ibarra,Tulcan,125.0,9.0,Sierra,Imbabura
+Latacunga,Ambato,40.0,3.5,Sierra,Cotopaxi
+Santo Domingo,Quevedo,105.0,8.0,Costa,Santo Domingo
+Santo Domingo,Esmeraldas,175.0,14.5,Costa,Santo Domingo
 Ambato,Riobamba,55.0,4.25,Sierra,Tungurahua
-Riobamba,Puyo,130.0,10.00,Sierra,Chimborazo
-Ibarra,Tulcan,125.0,9.00,Sierra,Imbabura
-Manta,Portoviejo,35.0,2.50,Costa,Manabi
-Machala,Huaquillas,75.0,5.00,Costa,El Oro
-Tena,Baeza,75.0,8.50,Amazonia,Napo
-Tena,Puyo,80.0,9.00,Amazonia,Napo
-Puyo,Macas,130.0,12.50,Amazonia,Pastaza
-Esmeraldas,Santo Domingo,175.0,14.50,Costa,Esmeraldas
-Loja,Zamora,65.0,7.00,Sierra,Loja
-Quito,Santo Domingo,150.0,12.00,Sierra,Pichincha
-Santo Domingo,Quevedo,105.0,8.00,Costa,Santo Domingo
-Quevedo,Guayaquil,175.0,11.50,Costa,Los Rios
+Ambato,Puyo,130.0,10.0,Sierra,Tungurahua
+Riobamba,Puyo,130.0,10.0,Sierra,Chimborazo
+Puyo,Tena,80.0,9.0,Amazonia,Pastaza
+Puyo,Macas,130.0,12.5,Amazonia,Pastaza
+Quevedo,Guayaquil,175.0,11.5,Costa,Los Rios
+Guayaquil,Manta,190.0,14.0,Costa,Guayas
+Guayaquil,Machala,185.0,13.5,Costa,Guayas
+Guayaquil,Santa Elena,120.0,8.0,Costa,Guayas
+Manta,Portoviejo,35.0,2.5,Costa,Manabi
+Machala,Huaquillas,75.0,5.0,Costa,El Oro
+Loja,Zamora,65.0,7.0,Sierra,Loja
+Tena,Baeza,75.0,8.5,Amazonia,Napo
+Sad,Asd,12.0,8.0,Sierra,Ibarra

@@ -303,8 +303,10 @@ def registrar_usuario(ruta_usuarios):
             print(f"Cuenta de {rol} creada exitosamente para {nombre}.")
         except Exception as e:
             print(f"Error técnico al escribir el archivo: {e}")
+            
     else:
         print("Error: La contraseña no cumple con los requisitos mínimos.")
+        print("Debe contener al menos una letra mayúscula, una letra minúscula, un número y al menos 6 caracteres")
 
 def login(ruta_usuarios):
     print("\n--- INICIO DE SESIÓN ---")

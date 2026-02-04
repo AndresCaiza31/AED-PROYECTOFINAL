@@ -1,2 +1,4 @@
 andres.caiza@epn.edu.ec,Ajcp3110,ANDRÉS JOSUE CAIZA PILCO,Admin
 joshua.llumiquinga@epn.edu.ec,Cliente123,JOSHUA LLUMIQUINGA,Cliente
+sebastian.chanchay@epn.edu.ec,Sebas123,Sebastián Chanchay,Admin
+lorena.chulde@epn.edu.ec,Lore123,Lorena Chulde,Cliente
