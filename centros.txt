@@ -1,6 +1,6 @@
 Quito,Sierra,5.75
-Guayaquil,Costa,6.20
-Cuenca,Sierra,4.80
-Manta,Costa,5.10
-Ambato,Sierra,3.90
-Loja,Sierra,4.50
+Guayaquil,Costa,6.2
+Cuenca,Sierra,4.8
+Manta,Costa,5.1
+Ambato,Sierra,3.9
+Loja,Sierra,4.5

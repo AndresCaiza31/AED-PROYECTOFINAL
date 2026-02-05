@@ -11,7 +11,7 @@ ARCHIVO_USUARIOS = "usuarios.txt"
 ARCHIVO_CENTROS = "centros.txt"
 ARCHIVO_RUTAS = "rutas.txt"
 SELECCION_CENTROS = []
-
+CENTROS_MEMORIA = []
 CAMBIOS_CENTROS = False
 CAMBIOS_RUTAS = False
 
@@ -138,6 +138,10 @@ def iniciar_sesion():
 # ==========================================================
 
 def cargar_centros():
+    global CENTROS_MEMORIA
+    if CENTROS_MEMORIA:
+        return CENTROS_MEMORIA
+
     centros = []
     for linea in leer_lineas(ARCHIVO_CENTROS):
         partes = linea.split(",")
@@ -150,7 +154,8 @@ def cargar_centros():
                 })
             except:
                 pass
-    return centros
+    CENTROS_MEMORIA = centros
+    return CENTROS_MEMORIA
 
 def agregar_centro():
     global CAMBIOS_CENTROS
@@ -187,18 +192,19 @@ def listar_centros():
         print(f"{i}. {c['nombre']} | {c['region']} | ${c['costo']}")
 
 def guardar_centros():
-    global CAMBIOS_CENTROS
+    global CAMBIOS_CENTROS, CENTROS_MEMORIA
     if not CAMBIOS_CENTROS:
         print("No hay cambios para guardar.")
         return
 
     lineas = [
         f"{c['nombre']},{c['region']},{c['costo']}"
-        for c in cargar_centros()
+        for c in CENTROS_MEMORIA
     ]
     escribir_lineas(ARCHIVO_CENTROS, lineas)
     CAMBIOS_CENTROS = False
     print("Centros guardados correctamente.")
+
 
 # ==========================================================
 # ACCIONES – CLIENTE
@@ -358,27 +364,23 @@ def actualizar_centro():
 
 
 def eliminar_centro():
-    global CAMBIOS_CENTROS
+    global CAMBIOS_CENTROS, CENTROS_MEMORIA
     print("\n=== ELIMINAR CENTRO ===")
 
-    centros = cargar_centros()
-    if not centros:
+    if not CENTROS_MEMORIA:
         print("No hay centros.")
         return
 
     nombre = input("Centro a eliminar: ").strip()
-    nuevos = [c for c in centros if c["nombre"] != nombre]
+    nuevos = [c for c in CENTROS_MEMORIA if c["nombre"] != nombre]
 
-    if len(nuevos) == len(centros):
+    if len(nuevos) == len(CENTROS_MEMORIA):
         print("Centro no encontrado.")
         return
 
-    escribir_lineas(
-        ARCHIVO_CENTROS,
-        [f"{c['nombre']},{c['region']},{c['costo']}" for c in nuevos]
-    )
-    CAMBIOS_CENTROS = False
-    print("Centro eliminado.")
+    CENTROS_MEMORIA = nuevos
+    CAMBIOS_CENTROS = True
+    print("Centro eliminado (pendiente de guardar).")
 
 
 def listar_seleccion_ordenada():
