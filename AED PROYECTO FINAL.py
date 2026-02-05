@@ -11,6 +11,7 @@ ARCHIVO_USUARIOS = "usuarios.txt"
 ARCHIVO_CENTROS = "centros.txt"
 ARCHIVO_RUTAS = "rutas.txt"
 SELECCION_CENTROS = []
+RUTAS_MEMORIA = []
 CENTROS_MEMORIA = []
 CAMBIOS_CENTROS = False
 CAMBIOS_RUTAS = False
@@ -235,7 +236,7 @@ def seleccionar_centros_envio():
                 print(f"Agregado: {centros_disponibles[idx]['nombre']}")
 
 def agregar_ruta():
-    global CAMBIOS_RUTAS
+    global CAMBIOS_RUTAS, RUTAS_MEMORIA
     print("\n=== AGREGAR RUTA ===")
 
     centros = cargar_centros()
@@ -245,10 +246,6 @@ def agregar_ruta():
 
     origen = input("Centro origen: ").strip()
     destino = input("Centro destino: ").strip()
-
-    if not origen or not destino:
-        print("Campos vacíos.")
-        return
 
     if origen == destino:
         print("Origen y destino no pueden ser iguales.")
@@ -268,13 +265,12 @@ def agregar_ruta():
         print("Distancia o costo inválido.")
         return
 
-    rutas = cargar_rutas()
-    for r in rutas:
+    for r in RUTAS_MEMORIA:
         if r["origen"] == origen and r["destino"] == destino:
             print("La ruta ya existe.")
             return
 
-    rutas.append({
+    RUTAS_MEMORIA.append({
         "origen": origen,
         "destino": destino,
         "distancia": distancia,
@@ -283,7 +279,6 @@ def agregar_ruta():
 
     CAMBIOS_RUTAS = True
     print("Ruta agregada (pendiente de guardar).")
-
 
 def listar_rutas():
     print("\n=== LISTA DE RUTAS ===")
@@ -326,6 +321,7 @@ def eliminar_ruta():
         print("Ruta eliminada.")
     else:
         print("Ruta no encontrada.")
+
 
 
 def actualizar_centro():
@@ -468,6 +464,10 @@ def actualizar_seleccion_centro():
 # ==========================================================
 
 def cargar_rutas():
+    global RUTAS_MEMORIA
+    if RUTAS_MEMORIA:
+        return RUTAS_MEMORIA
+
     rutas = []
     for linea in leer_lineas(ARCHIVO_RUTAS):
         partes = linea.split(",")
@@ -481,7 +481,25 @@ def cargar_rutas():
                 })
             except:
                 pass
-    return rutas
+
+    RUTAS_MEMORIA = rutas
+    return RUTAS_MEMORIA
+
+def guardar_rutas():
+    global CAMBIOS_RUTAS, RUTAS_MEMORIA
+    if not CAMBIOS_RUTAS:
+        print("No hay cambios de rutas para guardar.")
+        return
+
+    lineas = [
+        f"{r['origen']},{r['destino']},{r['distancia']},{r['costo']}"
+        for r in RUTAS_MEMORIA
+    ]
+
+    escribir_lineas(ARCHIVO_RUTAS, lineas)
+    CAMBIOS_RUTAS = False
+    print("Rutas guardadas correctamente.")
+
 
 def construir_grafo():
     grafo = {}
@@ -619,6 +637,7 @@ def menu_admin():
             eliminar_ruta()
         elif op == "8":
             guardar_centros()
+            guardar_rutas()
         elif op == "9":
             break
         else:
