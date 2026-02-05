@@ -204,6 +204,30 @@ def guardar_centros():
 # ACCIONES – CLIENTE
 # ==========================================================
 
+def seleccionar_centros_envio():
+    global SELECCION_CENTROS
+    print("\n=== SELECCIONAR CENTROS PARA ENVÍO ===")
+    centros_disponibles = cargar_centros()
+    
+    if not centros_disponibles:
+        print("No hay centros registrados en el sistema.")
+        return
+
+    for i, c in enumerate(centros_disponibles, 1):
+        print(f"{i}. {c['nombre']} (${c['costo']})")
+
+    entrada = input("\nIngrese los números de los centros (ej: 1,3): ").strip()
+    if not entrada: return
+
+    partes = entrada.split(",")
+    for parte in partes:
+        p = parte.strip()
+        if p.isdigit():
+            idx = int(p) - 1
+            if 0 <= idx < len(centros_disponibles):
+                SELECCION_CENTROS.append(centros_disponibles[idx])
+                print(f"Agregado: {centros_disponibles[idx]['nombre']}")
+
 def agregar_ruta():
     global CAMBIOS_RUTAS
     print("\n=== AGREGAR RUTA ===")
@@ -509,6 +533,10 @@ def dijkstra(origen, destino):
     print("Ruta:", " -> ".join(ruta))
     print("Costo total:", distancias[destino])
 
+# ==========================================================
+# ALGORITMO DE ORDENAMIENTO (MERGE SORT)
+# ==========================================================
+
 def merge_sort_centros(lista, llave):
     if len(lista) <= 1:
         return lista
@@ -532,39 +560,6 @@ def merge(izq, der, llave):
     resultado.extend(izq[i:])
     resultado.extend(der[j:])
     return resultado
-
-def seleccionar_centros_envio():
-    global SELECCION_CENTROS
-    print("\n=== SELECCIONAR CENTROS PARA ENVÍO ===")
-    centros_disponibles = cargar_centros()
-    
-    if not centros_disponibles:
-        print("No hay centros registrados en el sistema.")
-        return
-
-    for i, c in enumerate(centros_disponibles, 1):
-        print(f"{i}. {c['nombre']} (${c['costo']})")
-
-    entrada = input("\nIngrese los números de los centros separados por coma (ej: 1,3): ").strip()
-    
-    if not entrada:
-        print("No ingresó ningún dato.")
-        return
-
-    partes = entrada.split(",")
-    
-    for parte in partes:
-        parte = parte.strip()
-        if parte.isdigit():
-            idx = int(parte) - 1
-            if 0 <= idx < len(centros_disponibles):
-                centro = centros_disponibles[idx]
-                SELECCION_CENTROS.append(centro)
-                print(f"Agregado: {centro['nombre']}")
-            else:
-                print(f"El número {parte} está fuera de rango.")
-        else:
-            print(f"'{parte}' no es un número válido.")
 
 # ==========================================================
 # ÁRBOL JERÁRQUICO (DICCIONARIOS)
