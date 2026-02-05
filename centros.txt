@@ -1,26 +1,6 @@
-Quito,Centro Histórico,3.5,0.75,Sierra,Pichincha
-Quito,Escuela Politécnica Nacional,2.0,0.5,Sierra,Pichincha
-Quito,La Floresta,1.5,0.4,Sierra,Pichincha
-Quito,Ibarra,115.0,8.5,Sierra,Pichincha
-Quito,Latacunga,105.0,6.5,Sierra,Pichincha
-Quito,Santo Domingo,150.0,12.0,Sierra,Pichincha
-Quito,Baeza,105.0,9.5,Amazonia,Napo
-Quito,El Condado,3.0,2.0,Sierra,Pichincha
-Ibarra,Tulcan,125.0,9.0,Sierra,Imbabura
-Latacunga,Ambato,40.0,3.5,Sierra,Cotopaxi
-Santo Domingo,Quevedo,105.0,8.0,Costa,Santo Domingo
-Santo Domingo,Esmeraldas,175.0,14.5,Costa,Santo Domingo
-Ambato,Riobamba,55.0,4.25,Sierra,Tungurahua
-Ambato,Puyo,130.0,10.0,Sierra,Tungurahua
-Riobamba,Puyo,130.0,10.0,Sierra,Chimborazo
-Puyo,Tena,80.0,9.0,Amazonia,Pastaza
-Puyo,Macas,130.0,12.5,Amazonia,Pastaza
-Quevedo,Guayaquil,175.0,11.5,Costa,Los Rios
-Guayaquil,Manta,190.0,14.0,Costa,Guayas
-Guayaquil,Machala,185.0,13.5,Costa,Guayas
-Guayaquil,Santa Elena,120.0,8.0,Costa,Guayas
-Manta,Portoviejo,35.0,2.5,Costa,Manabi
-Machala,Huaquillas,75.0,5.0,Costa,El Oro
-Loja,Zamora,65.0,7.0,Sierra,Loja
-Tena,Baeza,75.0,8.5,Amazonia,Napo
-Sad,Asd,12.0,8.0,Sierra,Ibarra
+Quito,Sierra,5.75
+Guayaquil,Costa,6.20
+Cuenca,Sierra,4.80
+Manta,Costa,5.10
+Ambato,Sierra,3.90
+Loja,Sierra,4.50

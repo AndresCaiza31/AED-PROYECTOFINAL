@@ -1,0 +1,7 @@
+Quito,Ambato,135,3.50
+Ambato,Cuenca,340,6.20
+Quito,Guayaquil,420,8.75
+Guayaquil,Manta,200,4.40
+Cuenca,Loja,215,4.10
+Quito,Manta,360,7.90
+Ambato,Guayaquil,390,7.30
