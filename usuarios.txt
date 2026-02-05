@@ -1,1 +1,2 @@
 ANDRÉS CAIZA,1728496728,22,andres.caiza@epn.edu.ec,Ajcp3110,administrador
+JOSHUA LLUMIQUINGA,1234567890,20,joshua@epn.edu.ec,Joshua123,cliente

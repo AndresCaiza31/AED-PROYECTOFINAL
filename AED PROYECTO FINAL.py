@@ -10,6 +10,7 @@ import re
 ARCHIVO_USUARIOS = "usuarios.txt"
 ARCHIVO_CENTROS = "centros.txt"
 ARCHIVO_RUTAS = "rutas.txt"
+SELECCION_CENTROS = []
 
 CAMBIOS_CENTROS = False
 CAMBIOS_RUTAS = False
@@ -200,6 +201,243 @@ def guardar_centros():
     print("Centros guardados correctamente.")
 
 # ==========================================================
+# ACCIONES – CLIENTE
+# ==========================================================
+
+def agregar_ruta():
+    global CAMBIOS_RUTAS
+    print("\n=== AGREGAR RUTA ===")
+
+    centros = cargar_centros()
+    if not centros:
+        print("No existen centros registrados.")
+        return
+
+    origen = input("Centro origen: ").strip()
+    destino = input("Centro destino: ").strip()
+
+    if not origen or not destino:
+        print("Campos vacíos.")
+        return
+
+    if origen == destino:
+        print("Origen y destino no pueden ser iguales.")
+        return
+
+    nombres = [c["nombre"] for c in centros]
+    if origen not in nombres or destino not in nombres:
+        print("Centro inexistente.")
+        return
+
+    try:
+        distancia = float(input("Distancia: "))
+        costo = float(input("Costo: "))
+        if distancia <= 0 or costo < 0:
+            raise ValueError
+    except:
+        print("Distancia o costo inválido.")
+        return
+
+    rutas = cargar_rutas()
+    for r in rutas:
+        if r["origen"] == origen and r["destino"] == destino:
+            print("La ruta ya existe.")
+            return
+
+    rutas.append({
+        "origen": origen,
+        "destino": destino,
+        "distancia": distancia,
+        "costo": costo
+    })
+
+    CAMBIOS_RUTAS = True
+    print("Ruta agregada (pendiente de guardar).")
+
+
+def listar_rutas():
+    print("\n=== LISTA DE RUTAS ===")
+    rutas = cargar_rutas()
+    if not rutas:
+        print("No hay rutas registradas.")
+        return
+
+    for i, r in enumerate(rutas, 1):
+        print(f"{i}. {r['origen']} -> {r['destino']} | Dist: {r['distancia']} | Costo: {r['costo']}")
+
+
+def eliminar_ruta():
+    global CAMBIOS_RUTAS
+    print("\n=== ELIMINAR RUTA ===")
+
+    rutas = cargar_rutas()
+    if not rutas:
+        print("No hay rutas registradas.")
+        return
+
+    origen = input("Origen: ").strip()
+    destino = input("Destino: ").strip()
+
+    nuevas = []
+    eliminado = False
+
+    for r in rutas:
+        if r["origen"] == origen and r["destino"] == destino:
+            eliminado = True
+        else:
+            nuevas.append(r)
+
+    if eliminado:
+        escribir_lineas(
+            ARCHIVO_RUTAS,
+            [f"{r['origen']},{r['destino']},{r['distancia']},{r['costo']}" for r in nuevas]
+        )
+        CAMBIOS_RUTAS = False
+        print("Ruta eliminada.")
+    else:
+        print("Ruta no encontrada.")
+
+
+def actualizar_centro():
+    global CAMBIOS_CENTROS
+    print("\n=== ACTUALIZAR CENTRO ===")
+
+    centros = cargar_centros()
+    if not centros:
+        print("No hay centros.")
+        return
+
+    nombre = input("Centro a actualizar: ").strip()
+    for c in centros:
+        if c["nombre"] == nombre:
+            print(f"Actual: {c}")
+
+            nueva_region = input("Nueva región (ENTER para mantener): ").strip()
+            nuevo_costo = input("Nuevo costo (ENTER para mantener): ").strip()
+
+            if nueva_region:
+                c["region"] = nueva_region
+
+            if nuevo_costo:
+                try:
+                    valor = float(nuevo_costo)
+                    if valor >= 0:
+                        c["costo"] = valor
+                except:
+                    print("Costo inválido.")
+
+            CAMBIOS_CENTROS = True
+            print("Centro actualizado (pendiente de guardar).")
+            return
+
+    print("Centro no encontrado.")
+
+
+def eliminar_centro():
+    global CAMBIOS_CENTROS
+    print("\n=== ELIMINAR CENTRO ===")
+
+    centros = cargar_centros()
+    if not centros:
+        print("No hay centros.")
+        return
+
+    nombre = input("Centro a eliminar: ").strip()
+    nuevos = [c for c in centros if c["nombre"] != nombre]
+
+    if len(nuevos) == len(centros):
+        print("Centro no encontrado.")
+        return
+
+    escribir_lineas(
+        ARCHIVO_CENTROS,
+        [f"{c['nombre']},{c['region']},{c['costo']}" for c in nuevos]
+    )
+    CAMBIOS_CENTROS = False
+    print("Centro eliminado.")
+
+
+def listar_seleccion_ordenada():
+    global SELECCION_CENTROS
+    if not SELECCION_CENTROS:
+        print("\nLa selección está vacía.")
+        return
+
+    print("\n--- Ordenar por: 1. Nombre | 2. Costo ---")
+    op = input("Seleccione: ")
+    llave = "nombre" if op == "1" else "costo"
+    
+    lista_ordenada = merge_sort_centros(SELECCION_CENTROS, llave)
+    
+    print("\n=== CENTROS SELECCIONADOS ===")
+    total = 0
+    for c in lista_ordenada:
+        print(f"- {c['nombre']} | ${c['costo']}")
+        total += c['costo']
+    print(f"TOTAL ESTIMADO: ${total}")
+
+def eliminar_centro_seleccionado():
+    if not SELECCION_CENTROS:
+        print("\nNo hay nada que eliminar.")
+        return
+
+    for i, c in enumerate(SELECCION_CENTROS, 1):
+        print(f"{i}. {c['nombre']}")
+    
+    try:
+        idx = int(input("Número del centro a quitar: ")) - 1
+        if 0 <= idx < len(SELECCION_CENTROS):
+            eliminado = SELECCION_CENTROS.pop(idx)
+            print(f"Eliminado: {eliminado['nombre']}")
+        else:
+            print("Índice inválido.")
+    except:
+        print("Error en la entrada.")
+
+def guardar_seleccion_archivo(nombre_usuario):
+    if not SELECCION_CENTROS:
+        print("\nNo hay selección para guardar.")
+        return
+    lineas_actuales = leer_lineas(ARCHIVO_RUTAS)
+    
+    nuevas_lineas = [
+        f"PEDIDO_{nombre_usuario.replace(' ', '_')},{c['nombre']},0,{c['costo']}" 
+        for c in SELECCION_CENTROS
+    ]
+    
+    escribir_lineas(ARCHIVO_RUTAS, lineas_actuales + nuevas_lineas)
+    print(f"\nSelección guardada en {ARCHIVO_RUTAS} correctamente.")
+
+def actualizar_seleccion_centro():
+    global SELECCION_CENTROS
+    if not SELECCION_CENTROS:
+        print("\nNo hay centros seleccionados para actualizar.")
+        return
+
+    print("\n=== ACTUALIZAR SELECCIÓN ===")
+    for i, c in enumerate(SELECCION_CENTROS, 1):
+        print(f"{i}. {c['nombre']} (Costo actual: ${c['costo']})")
+
+    try:
+        idx = int(input("Número del centro que desea cambiar: ")) - 1
+        if 0 <= idx < len(SELECCION_CENTROS):
+            centros_disponibles = cargar_centros()
+            print("\n--- Seleccione el nuevo centro de reemplazo ---")
+            for j, disponible in enumerate(centros_disponibles, 1):
+                print(f"{j}. {disponible['nombre']} (${disponible['costo']})")
+            
+            nuevo_idx = int(input("Número del nuevo centro: ")) - 1
+            if 0 <= nuevo_idx < len(centros_disponibles):
+                SELECCION_CENTROS[idx] = centros_disponibles[nuevo_idx]
+                print("Selección actualizada con éxito.")
+            else:
+                print("Opción de reemplazo no válida.")
+        else:
+            print("Índice de selección no válido.")
+    except:
+        print("Error: Ingrese solo números.")
+
+# ==========================================================
 # GRAFOS – RUTAS
 # ==========================================================
 
@@ -271,6 +509,63 @@ def dijkstra(origen, destino):
     print("Ruta:", " -> ".join(ruta))
     print("Costo total:", distancias[destino])
 
+def merge_sort_centros(lista, llave):
+    if len(lista) <= 1:
+        return lista
+
+    medio = len(lista) // 2
+    izq = merge_sort_centros(lista[:medio], llave)
+    der = merge_sort_centros(lista[medio:], llave)
+
+    return merge(izq, der, llave)
+
+def merge(izq, der, llave):
+    resultado = []
+    i = j = 0
+    while i < len(izq) and j < len(der):
+        if izq[i][llave] <= der[j][llave]:
+            resultado.append(izq[i])
+            i += 1
+        else:
+            resultado.append(der[j])
+            j += 1
+    resultado.extend(izq[i:])
+    resultado.extend(der[j:])
+    return resultado
+
+def seleccionar_centros_envio():
+    global SELECCION_CENTROS
+    print("\n=== SELECCIONAR CENTROS PARA ENVÍO ===")
+    centros_disponibles = cargar_centros()
+    
+    if not centros_disponibles:
+        print("No hay centros registrados en el sistema.")
+        return
+
+    for i, c in enumerate(centros_disponibles, 1):
+        print(f"{i}. {c['nombre']} (${c['costo']})")
+
+    entrada = input("\nIngrese los números de los centros separados por coma (ej: 1,3): ").strip()
+    
+    if not entrada:
+        print("No ingresó ningún dato.")
+        return
+
+    partes = entrada.split(",")
+    
+    for parte in partes:
+        parte = parte.strip()
+        if parte.isdigit():
+            idx = int(parte) - 1
+            if 0 <= idx < len(centros_disponibles):
+                centro = centros_disponibles[idx]
+                SELECCION_CENTROS.append(centro)
+                print(f"Agregado: {centro['nombre']}")
+            else:
+                print(f"El número {parte} está fuera de rango.")
+        else:
+            print(f"'{parte}' no es un número válido.")
+
 # ==========================================================
 # ÁRBOL JERÁRQUICO (DICCIONARIOS)
 # ==========================================================
@@ -301,28 +596,51 @@ def menu_admin():
         print("\n=== MENÚ ADMINISTRADOR ===")
         print("1. Agregar centro")
         print("2. Listar centros")
-        print("3. Guardar cambios")
-        print("4. Salir")
+        print("3. Actualizar centro")
+        print("4. Eliminar centro")
+        print("5. Agregar ruta")
+        print("6. Listar rutas")
+        print("7. Eliminar ruta")
+        print("8. Guardar cambios")
+        print("9. Salir")
 
         op = input("Opción: ")
+
         if op == "1":
             agregar_centro()
         elif op == "2":
             listar_centros()
         elif op == "3":
-            guardar_centros()
+            actualizar_centro()
         elif op == "4":
+            eliminar_centro()
+        elif op == "5":
+            agregar_ruta()
+        elif op == "6":
+            listar_rutas()
+        elif op == "7":
+            eliminar_ruta()
+        elif op == "8":
+            guardar_centros()
+        elif op == "9":
             break
         else:
             print("Opción inválida.")
+
         pausar()
+
 
 def menu_cliente(nombre):
     while True:
         print(f"\n=== MENÚ CLIENTE ({nombre}) ===")
         print("1. Ver jerarquía de centros")
-        print("2. Calcular ruta óptima")
-        print("3. Salir")
+        print("2. Calcular ruta óptima (Dijkstra)")
+        print("3. Seleccionar centros para envío")
+        print("4. Ver selección y total (Ordenado Merge Sort)")
+        print("5. Actualizar selección de centro")
+        print("6. Eliminar centro de selección")
+        print("7. Confirmar y Guardar selección en archivo")
+        print("8. Salir")
 
         op = input("Opción: ")
         if op == "1":
@@ -332,6 +650,17 @@ def menu_cliente(nombre):
             d = input("Destino: ").strip()
             dijkstra(o, d)
         elif op == "3":
+            seleccionar_centros_envio()
+        elif op == "4":
+            listar_seleccion_ordenada()
+        elif op == "5":
+            actualizar_seleccion_centro()
+        elif op == "6":
+            eliminar_centro_seleccionado()
+        elif op == "7":
+            guardar_seleccion_archivo(nombre)
+        elif op == "8":
+            SELECCION_CENTROS.clear()
             break
         else:
             print("Opción inválida.")
