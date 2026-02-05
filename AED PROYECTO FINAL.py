@@ -213,32 +213,40 @@ def guardar_centros():
 
 def seleccionar_centros_envio():
     global SELECCION_CENTROS
-    print("\n=== SELECCIONAR CENTROS PARA ENVÍO ===")
     centros_disponibles = cargar_centros()
-    
+
     if not centros_disponibles:
-        print("No hay centros registrados en el sistema.")
+        print("No existen centros registrados.")
         return
+    while True:
+        print("\n=== SELECCIÓN DE CENTROS ===")
+        for i, c in enumerate(centros_disponibles, 1):
+            print(f"{i}. {c['nombre']}")
 
-    for i, c in enumerate(centros_disponibles, 1):
-        print(f"{i}. {c['nombre']} (${c['costo']})")
+        print("0. Finalizar selección")
+        try:
+            op = int(input("Seleccione un centro: "))
+        except:
+            print("Opción inválida.")
+            continue
+        if op == 0:
+            break
+        if op < 1 or op > len(centros_disponibles):
+            print("Opción fuera de rango.")
+            continue
+        centro = centros_disponibles[op - 1]
+        if centro not in SELECCION_CENTROS:
+            SELECCION_CENTROS.append(centro)
+            print(f"Agregado: {centro['nombre']}")
+        else:
+            print("Ese centro ya está seleccionado.")
 
-    entrada = input("\nIngrese los números de los centros (ej: 1,3): ").strip()
-    if not entrada: return
-
-    partes = entrada.split(",")
-    for parte in partes:
-        p = parte.strip()
-        if p.isdigit():
-            idx = int(p) - 1
-            if 0 <= idx < len(centros_disponibles):
-                SELECCION_CENTROS.append(centros_disponibles[idx])
-                print(f"Agregado: {centros_disponibles[idx]['nombre']}")
+    print("Selección finalizada.")
 
 def agregar_ruta():
     global CAMBIOS_RUTAS, RUTAS_MEMORIA
+    cargar_rutas()
     print("\n=== AGREGAR RUTA ===")
-
     centros = cargar_centros()
     if not centros:
         print("No existen centros registrados.")
@@ -292,11 +300,11 @@ def listar_rutas():
 
 
 def eliminar_ruta():
-    global CAMBIOS_RUTAS
+    global CAMBIOS_RUTAS, RUTAS_MEMORIA
+    cargar_rutas()
     print("\n=== ELIMINAR RUTA ===")
 
-    rutas = cargar_rutas()
-    if not rutas:
+    if not RUTAS_MEMORIA:
         print("No hay rutas registradas.")
         return
 
@@ -306,23 +314,18 @@ def eliminar_ruta():
     nuevas = []
     eliminado = False
 
-    for r in rutas:
+    for r in RUTAS_MEMORIA:
         if r["origen"] == origen and r["destino"] == destino:
             eliminado = True
         else:
             nuevas.append(r)
 
     if eliminado:
-        escribir_lineas(
-            ARCHIVO_RUTAS,
-            [f"{r['origen']},{r['destino']},{r['distancia']},{r['costo']}" for r in nuevas]
-        )
-        CAMBIOS_RUTAS = False
-        print("Ruta eliminada.")
+        RUTAS_MEMORIA = nuevas
+        CAMBIOS_RUTAS = True
+        print("Ruta eliminada (pendiente de guardar).")
     else:
         print("Ruta no encontrada.")
-
-
 
 def actualizar_centro():
     global CAMBIOS_CENTROS
@@ -429,6 +432,7 @@ def guardar_seleccion_archivo(nombre_usuario):
     
     escribir_lineas(ARCHIVO_RUTAS, lineas_actuales + nuevas_lineas)
     print(f"\nSelección guardada en {ARCHIVO_RUTAS} correctamente.")
+    SELECCION_CENTROS.clear()
 
 def actualizar_seleccion_centro():
     global SELECCION_CENTROS
@@ -470,6 +474,9 @@ def cargar_rutas():
 
     rutas = []
     for linea in leer_lineas(ARCHIVO_RUTAS):
+
+        if linea.startswith("PEDIDO_"):
+            continue
         partes = linea.split(",")
         if len(partes) == 4:
             try:
@@ -490,16 +497,20 @@ def guardar_rutas():
     if not CAMBIOS_RUTAS:
         print("No hay cambios de rutas para guardar.")
         return
-
-    lineas = [
+    lineas_pedidos = [
+        l for l in leer_lineas(ARCHIVO_RUTAS)
+        if l.startswith("PEDIDO_")
+    ]
+    lineas_rutas = [
         f"{r['origen']},{r['destino']},{r['distancia']},{r['costo']}"
         for r in RUTAS_MEMORIA
     ]
-
-    escribir_lineas(ARCHIVO_RUTAS, lineas)
+    escribir_lineas(
+        ARCHIVO_RUTAS,
+        lineas_pedidos + lineas_rutas
+    )
     CAMBIOS_RUTAS = False
     print("Rutas guardadas correctamente.")
-
 
 def construir_grafo():
     grafo = {}
